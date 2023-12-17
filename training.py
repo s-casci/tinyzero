@@ -2,7 +2,7 @@ from tinygrad import Tensor, nn, TinyJit
 
 
 @TinyJit
-def train_step_jitted(model, optimizer, observations, actions_dist, results):
+def alphazero_train_step_jitted(model, optimizer, observations, actions_dist, results):
   with Tensor.train():
     optimizer.zero_grad()
     values, log_policies = model(observations)
@@ -16,8 +16,8 @@ def train_step_jitted(model, optimizer, observations, actions_dist, results):
     return values_loss.realize(), policies_loss.realize()
 
 
-def train_step(model, optimizer, observations, actions_dist, results):
-  values_loss, policies_loss = train_step_jitted(
+def alphazero_train_step(model, optimizer, observations, actions_dist, results):
+  values_loss, policies_loss = alphazero_train_step_jitted(
     model, optimizer, Tensor(observations), Tensor(actions_dist), Tensor(results)
   )
   return values_loss.item(), policies_loss.item()

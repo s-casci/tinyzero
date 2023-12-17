@@ -1,7 +1,7 @@
 from tinygrad import Tensor, TinyJit
 import numpy as np
 from replay_buffer import ReplayBuffer
-from training import train_step
+from training import alphazero_train_step
 from mcts import search
 
 
@@ -77,7 +77,9 @@ class AlphaZeroAgent:
     if len(self.training_buffer) >= batch_size:
       for _ in range(epochs):
         observations, actions_dist, results = self.training_buffer.sample(batch_size)
-        values_loss, policies_loss = train_step(self.model, self.optimizer, observations, actions_dist, results)
+        values_loss, policies_loss = alphazero_train_step(
+          self.model, self.optimizer, observations, actions_dist, results
+        )
         values_losses.append(values_loss)
         policies_losses.append(policies_loss)
       self.reset()
