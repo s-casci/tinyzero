@@ -80,6 +80,6 @@ class AlphaZeroAgent:
         values_loss, policies_loss = train_step(self.model, self.optimizer, observations, actions_dist, results)
         values_losses.append(values_loss)
         policies_losses.append(policies_loss)
-        self.reset()
+      self.reset()
 
     return values_losses, policies_losses
