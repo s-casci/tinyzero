@@ -10,7 +10,7 @@ class AlphaZeroAgent:
     self.model = model
     # optimizer and training buffer might be None if the agent is used for evaluation only
     self.optimizer = optimizer
-    self.training_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
+    self.replay_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
 
   @staticmethod
   @TinyJit
@@ -70,13 +70,13 @@ class AlphaZeroAgent:
     result = game.swap_result(first_person_result)
     while len(game_buffer) > 0:
       observation, action_dist = game_buffer.pop()
-      self.training_buffer.add_sample(observation, action_dist, result)
+      self.replay_buffer.add_sample(observation, action_dist, result)
       result = game.swap_result(result)
 
     values_losses, policies_losses = [], []
-    if len(self.training_buffer) >= batch_size:
+    if len(self.replay_buffer) >= batch_size:
       for _ in range(epochs):
-        observations, actions_dist, results = self.training_buffer.sample(batch_size)
+        observations, actions_dist, results = self.replay_buffer.sample(batch_size)
         values_loss, policies_loss = alphazero_train_step(
           self.model, self.optimizer, observations, actions_dist, results
         )
