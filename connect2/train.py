@@ -1,6 +1,6 @@
 from game import Connect2
-from tinygrad import nn
 from datetime import datetime
+import torch
 import wandb
 from tqdm import tqdm
 import os
@@ -8,7 +8,6 @@ import sys
 
 sys.path.append(os.getcwd())
 from models import LinearNetwork  # noqa: E402
-from training import save_state, load_state  # noqa: E402
 from agents import AlphaZeroAgent  # noqa: E402
 
 OUT_DIR = "connect2/out"
@@ -31,12 +30,12 @@ if __name__ == "__main__":
   game = Connect2()
 
   model = LinearNetwork(game.observation_shape, game.action_space)
-  optimizer = nn.optim.AdamW(nn.state.get_parameters(model), lr=LEARNING_RATE, wd=WEIGHT_DECAY)
-
-  if INIT_FROM_CHECKPOINT:
-    load_state(model, optimizer, f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
+  optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
   agent = AlphaZeroAgent(model, optimizer, MAX_REPLAY_BUFFER_SIZE)
+
+  if INIT_FROM_CHECKPOINT:
+    agent.load_training_state(f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
 
   if WANDB_LOG:
     wandb_run = wandb.init(project=WANDB_PROJECT_NAME, name=WANDB_RUN_NAME)
@@ -56,13 +55,13 @@ if __name__ == "__main__":
         wandb.log({"values_loss": values_loss, "policies_loss": policies_loss})
 
     if i > 0 and i % SELFPLAY_GAMES_PER_SAVE == 0:
-      print("Saving state")
-      save_state(model, optimizer, f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
+      print("Saving training state")
+      agent.save_training_state(f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
 
   if WANDB_LOG:
     wandb_run.finish()
 
   print("Training complete")
 
-  print("Saving final state")
-  save_state(model, optimizer, f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
+  print("Saving final training state")
+  agent.save_training_state(f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")

@@ -1,7 +1,7 @@
-from tinygrad import Tensor, TinyJit
+import torch
+import torch.nn.functional as F
 import numpy as np
 from replay_buffer import ReplayBuffer
-from training import alphazero_train_step
 from mcts import search
 
 
@@ -12,37 +12,23 @@ class AlphaZeroAgent:
     self.optimizer = optimizer
     self.replay_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
 
-  @staticmethod
-  @TinyJit
-  def _value_fn_jitted(model, observation):
-    Tensor.no_grad = True
-    x = model.first_layer(observation).relu()
-    x = model.second_layer(x).relu()
-    value = model.value_head(x).tanh().realize()
-    Tensor.no_grad = False
-    return value
-
-  @staticmethod
-  @TinyJit
-  def _policy_fn_jitted(model, observation):
-    Tensor.no_grad = True
-    x = model.first_layer(observation).relu()
-    x = model.second_layer(x).relu()
-    policy = model.policy_head(x).softmax(axis=-1).realize()
-    Tensor.no_grad = False
-    return policy
-
-  def reset(self):
-    self._value_fn_jitted.reset()
-    self._policy_fn_jitted.reset()
-
+  @torch.no_grad()
   def value_fn(self, game):
-    observation = game.to_observation()
-    return AlphaZeroAgent._value_fn_jitted(self.model, Tensor(observation)).item()
+    observation = torch.tensor(game.to_observation())
+    self.model.eval()
+    x = F.relu(self.model.first_layer(observation))
+    x = F.relu(self.model.second_layer(x))
+    value = F.tanh(self.model.value_head(x))
+    return value.item()
 
+  @torch.no_grad
   def policy_fn(self, game):
-    observation = game.to_observation()
-    return AlphaZeroAgent._policy_fn_jitted(self.model, Tensor(observation)).numpy()
+    observation = torch.tensor(game.to_observation())
+    self.model.eval()
+    x = F.relu(self.model.first_layer(observation))
+    x = F.relu(self.model.second_layer(x))
+    policy = F.softmax(self.model.policy_head(x), dim=-1)
+    return policy.numpy()
 
   def selfplay(self, game, search_iterations, c_puct=1.0, dirichlet_alpha=None):
     buffer = []
@@ -62,6 +48,29 @@ class AlphaZeroAgent:
 
     return first_person_result, buffer
 
+  def save_training_state(self, model_out_path, optimizer_out_path):
+    torch.save(self.model.state_dict(), model_out_path)
+    torch.save(self.optimizer.state_dict(), optimizer_out_path)
+
+  def load_training_state(self, model_out_path, optimizer_out_path):
+    self.model.load_state_dict(torch.load(model_out_path))
+    self.optimizer.load_state_dict(torch.load(optimizer_out_path))
+
+  def _model_train_step(self, observations, actions_dist, results):
+    observations = torch.tensor(observations)
+    actions_dist = torch.tensor(actions_dist)
+    results = torch.tensor(results)
+    self.model.train()
+    self.optimizer.zero_grad()
+    values, log_policies = self.model(observations)
+    # mean squared error
+    values_loss = F.mse_loss(values.squeeze(1), results)
+    # Kullback–Leibler divergence
+    policies_loss = F.kl_div(log_policies, actions_dist, reduction="batchmean")
+    (values_loss + policies_loss).backward()
+    self.optimizer.step()
+    return values_loss.item(), policies_loss.item()
+
   def train_step(self, game, search_iterations, batch_size, epochs, c_puct=1.0, dirichlet_alpha=None):
     first_person_result, game_buffer = self.selfplay(
       game, search_iterations, c_puct=c_puct, dirichlet_alpha=dirichlet_alpha
@@ -77,11 +86,8 @@ class AlphaZeroAgent:
     if len(self.replay_buffer) >= batch_size:
       for _ in range(epochs):
         observations, actions_dist, results = self.replay_buffer.sample(batch_size)
-        values_loss, policies_loss = alphazero_train_step(
-          self.model, self.optimizer, observations, actions_dist, results
-        )
+        values_loss, policies_loss = self._model_train_step(observations, actions_dist, results)
         values_losses.append(values_loss)
         policies_losses.append(policies_loss)
-      self.reset()
 
     return values_losses, policies_losses
