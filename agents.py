@@ -12,7 +12,7 @@ class AlphaZeroAgent:
     self.optimizer = optimizer
     self.replay_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
 
-  @torch.no_grad()
+  @torch.no_grad
   def value_fn(self, game):
     observation = torch.tensor(game.to_observation())
     self.model.eval()
