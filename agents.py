@@ -9,7 +9,7 @@ from mcts import search
 class RandomAgent:
   @staticmethod
   def value_fn(game):
-    return 0.0
+    return game.get_first_person_result() or 0
 
   @staticmethod
   def policy_fn(game):
