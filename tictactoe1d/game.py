@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class TicTacToe:
+class TicTacToe1D:
   def __init__(self):
     self.reset()
 

@@ -16,18 +16,14 @@ class AlphaZeroAgent:
   def value_fn(self, game):
     observation = torch.tensor(game.to_observation())
     self.model.eval()
-    x = F.relu(self.model.first_layer(observation))
-    x = F.relu(self.model.second_layer(x))
-    value = F.tanh(self.model.value_head(x))
+    value = self.model.value_forward(observation)
     return value.item()
 
   @torch.no_grad
   def policy_fn(self, game):
     observation = torch.tensor(game.to_observation())
     self.model.eval()
-    x = F.relu(self.model.first_layer(observation))
-    x = F.relu(self.model.second_layer(x))
-    policy = F.softmax(self.model.policy_head(x), dim=-1)
+    policy = self.model.policy_forward(observation)
     return policy.numpy()
 
   def selfplay(self, game, search_iterations, c_puct=1.0, dirichlet_alpha=None):

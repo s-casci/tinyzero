@@ -1,4 +1,4 @@
-from game import TicTacToe
+from game import TicTacToe1D
 from datetime import datetime
 import torch
 import wandb
@@ -23,11 +23,11 @@ WEIGHT_DECAY = 1e-4
 C_PUCT = 1.5
 DIRICHLET_ALPHA = 0.3  # set to None to disable
 WANDB_LOG = True
-WANDB_PROJECT_NAME = "tinyalphazero-tictactoe"
+WANDB_PROJECT_NAME = "tinyalphazero-tictactoe1d"
 WANDB_RUN_NAME = "run" + datetime.now().strftime("%Y%m%d-%H%M%S")
 
 if __name__ == "__main__":
-  game = TicTacToe()
+  game = TicTacToe1D()
 
   model = LinearNetwork(game.observation_shape, game.action_space)
   optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
   agent = AlphaZeroAgent(model, optimizer, MAX_REPLAY_BUFFER_SIZE)
 
   if INIT_FROM_CHECKPOINT:
-    agent.load_training_state(f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
+    agent.load_training_state(f"{OUT_DIR}/model.pth", f"{OUT_DIR}/optimizer.pth")
 
   if WANDB_LOG:
     wandb_run = wandb.init(project=WANDB_PROJECT_NAME, name=WANDB_RUN_NAME)
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     if i > 0 and i % SELFPLAY_GAMES_PER_SAVE == 0:
       print("Saving training state")
-      agent.save_training_state(f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
+      agent.save_training_state(f"{OUT_DIR}/model.pth", f"{OUT_DIR}/optimizer.pth")
 
   if WANDB_LOG:
     wandb_run.finish()
@@ -64,4 +64,4 @@ if __name__ == "__main__":
   print("Training complete")
 
   print("Saving final training state")
-  agent.save_training_state(f"{OUT_DIR}/model.safetensors", f"{OUT_DIR}/optimizer.safetensors")
+  agent.save_training_state(f"{OUT_DIR}/model.pth", f"{OUT_DIR}/optimizer.pth")

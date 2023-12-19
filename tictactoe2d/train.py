@@ -1,4 +1,4 @@
-from game import Connect2
+from game import TicTacToe2D
 from datetime import datetime
 import torch
 import wandb
@@ -7,29 +7,29 @@ import os
 import sys
 
 sys.path.append(os.getcwd())
-from models import LinearNetwork  # noqa: E402
+from models import Conv2DNetwork  # noqa: E402
 from agents import AlphaZeroAgent  # noqa: E402
 
-OUT_DIR = "connect2/out"
+OUT_DIR = "tictactoe/out"
 INIT_FROM_CHECKPOINT = False
-SELFPLAY_GAMES = 256
+SELFPLAY_GAMES = 1024
 SELFPLAY_GAMES_PER_SAVE = SELFPLAY_GAMES // 4
-BATCH_SIZE = 64
-SEARCH_ITERATIONS = 16
+BATCH_SIZE = 128
+SEARCH_ITERATIONS = 32
 MAX_REPLAY_BUFFER_SIZE = BATCH_SIZE * 4
-TRAINING_EPOCHS = 3
-LEARNING_RATE = 1e-3
+TRAINING_EPOCHS = 5
+LEARNING_RATE = 1e-4
 WEIGHT_DECAY = 1e-4
 C_PUCT = 1.5
 DIRICHLET_ALPHA = 0.3  # set to None to disable
 WANDB_LOG = True
-WANDB_PROJECT_NAME = "tinyalphazero-connect2"
+WANDB_PROJECT_NAME = "tinyalphazero-tictactoe2d"
 WANDB_RUN_NAME = "run" + datetime.now().strftime("%Y%m%d-%H%M%S")
 
 if __name__ == "__main__":
-  game = Connect2()
+  game = TicTacToe2D()
 
-  model = LinearNetwork(game.observation_shape, game.action_space)
+  model = Conv2DNetwork(game.observation_shape, game.action_space)
   optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
   agent = AlphaZeroAgent(model, optimizer, MAX_REPLAY_BUFFER_SIZE)
