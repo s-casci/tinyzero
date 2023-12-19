@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 from models import LinearNetwork  # noqa: E402
 from agents import AlphaZeroAgent  # noqa: E402
 
-OUT_DIR = "tictactoe/out"
+OUT_DIR = "tictactoe1d/out"
 INIT_FROM_CHECKPOINT = False
 SELFPLAY_GAMES = 1024
 SELFPLAY_GAMES_PER_SAVE = SELFPLAY_GAMES // 4
