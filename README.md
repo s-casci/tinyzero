@@ -37,4 +37,4 @@ The AlphaZero agent computes the policy loss as the Kulback-Leibler divergence b
 
 ## Add a new agent
 
-Because of the way the value and policy functions are interpreted by the search tree, it's possible to use or train any agent that implements them.
+Thanks to the way the value and policy functions are interpreted by the search tree, it's possible to use or train any agent that implements them.
