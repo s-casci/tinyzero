@@ -40,7 +40,7 @@ The model you add should implement the following methods:
 
 The latter two methods are used to speed up the MCTS.
 
-The AlphaZero agent computes the policy loss as the Kulback-Leibler divergence between the distribution produced by the model and the one given by the MCTS. Therefore, the policy returned by the `__call__` method should be logaritmic.
+The AlphaZero agent computes the policy loss as the Kulback-Leibler divergence between the distribution produced by the model and the one given by the MCTS. Therefore, the policy returned by the `__call__` method should be logaritmic. On the other hand, the policy returned by the `policy_forward` method should represent a probability distribution.
 
 ## Add a new agent
 
