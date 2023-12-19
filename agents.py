@@ -6,23 +6,17 @@ import copy
 from mcts import search
 
 
-class RandomAgent:
-  @staticmethod
-  def value_fn(game):
-    return game.get_first_person_result() or 0
-
-  @staticmethod
-  def policy_fn(game):
-    return np.ones(game.action_space) / game.action_space
-
-
-class ClassicMCTSAgent(RandomAgent):
+class ClassicMCTSAgent:
   @staticmethod
   def value_fn(game):
     game = copy.deepcopy(game)
     while first_person_result := game.get_first_person_result() is None:
       game.step(np.random.choice(game.get_legal_actions()))
     return first_person_result
+
+  @staticmethod
+  def policy_fn(game):
+    return np.ones(game.action_space) / game.action_space
 
 
 class AlphaZeroAgent:
