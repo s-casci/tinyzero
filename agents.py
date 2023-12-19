@@ -2,7 +2,27 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 from replay_buffer import ReplayBuffer
+import copy
 from mcts import search
+
+
+class RandomAgent:
+  @staticmethod
+  def value_fn(game):
+    return 0.0
+
+  @staticmethod
+  def policy_fn(game):
+    return np.ones(game.action_space) / game.action_space
+
+
+class ClassicMCTSAgent(RandomAgent):
+  @staticmethod
+  def value_fn(game):
+    game = copy.deepcopy(game)
+    while first_person_result := game.get_first_person_result() is None:
+      game.step(np.random.choice(game.get_legal_actions()))
+    return first_person_result
 
 
 class AlphaZeroAgent:
