@@ -7,7 +7,7 @@ import os
 import sys
 
 sys.path.append(os.getcwd())
-from models import Conv2DNetwork  # noqa: E402
+from models import ConvolutionalNetwork  # noqa: E402
 from agents import AlphaZeroAgent, ClassicMCTSAgent  # noqa: E402
 from play import pit  # noqa: E402
 
@@ -16,7 +16,7 @@ EVAL_GAMES = 100
 if __name__ == "__main__":
   game = TicTacToe2D()
 
-  model = Conv2DNetwork(game.observation_shape, game.action_space)
+  model = ConvolutionalNetwork(game.observation_shape, game.action_space)
   model.load_state_dict(torch.load(f"{OUT_DIR}/model.pth"))
 
   agent = AlphaZeroAgent(model)

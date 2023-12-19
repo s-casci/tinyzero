@@ -33,7 +33,7 @@ class LinearNetwork(nn.Module):
     return log_policy
 
 
-class Conv2DNetwork(nn.Module):
+class ConvolutionalNetwork(nn.Module):
   def __init__(self, input_shape, action_space, first_linear_size=512, second_linear_size=256):
     super().__init__()
     self.conv1 = nn.Conv2d(1, 32, kernel_size=1)
