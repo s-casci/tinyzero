@@ -1,0 +1,7 @@
+Package            Version
+------------------ ----------
+numba              0.58.1
+numpy              1.26.2
+torch              2.1.2
+tqdm               4.66.1
+wandb              0.16.1
