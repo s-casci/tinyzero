@@ -9,11 +9,16 @@ Run `pip install requirements.txt` to make sure you have all the dependencies in
 
 Then, to train an agent on one of the existing environments, run:
 ```bash
-python3 tictactoe/train.py
+python3 tictactoe2d/train.py
 ```
-where `tictactoe` is the name of the environment you want to train on.
+where `tictactoe2d` is the name of the environment you want to train on.
 
 Inside the train script, you can change some parameters, such as the number of episodes, the number of simulations and enable [wandb](https://wandb.ai/site) logging.
+
+Similarly, to evaluate the trained agent run:
+```bash
+python3 tictactoe2d/eval.py
+```
 
 ## Add an environment
 
