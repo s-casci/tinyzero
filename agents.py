@@ -28,14 +28,14 @@ class AlphaZeroAgent:
 
   @torch.no_grad
   def value_fn(self, game):
-    observation = torch.tensor(game.to_observation())
+    observation = torch.tensor(game.to_observation(), device=self.model.device)
     self.model.eval()
     value = self.model.value_forward(observation)
     return value.item()
 
   @torch.no_grad
   def policy_fn(self, game):
-    observation = torch.tensor(game.to_observation())
+    observation = torch.tensor(game.to_observation(), device=self.model.device)
     self.model.eval()
     policy = self.model.policy_forward(observation)
     return policy.numpy()
@@ -67,9 +67,9 @@ class AlphaZeroAgent:
     self.optimizer.load_state_dict(torch.load(optimizer_out_path))
 
   def _model_train_step(self, observations, actions_dist, results):
-    observations = torch.tensor(observations)
-    actions_dist = torch.tensor(actions_dist)
-    results = torch.tensor(results)
+    observations = torch.tensor(observations, device=self.model.device)
+    actions_dist = torch.tensor(actions_dist, device=self.model.device)
+    results = torch.tensor(results, device=self.model.device)
     self.model.train()
     self.optimizer.zero_grad()
     values, log_policies = self.model(observations)

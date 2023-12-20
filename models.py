@@ -11,6 +11,9 @@ class LinearNetwork(nn.Module):
     self.value_head = nn.Linear(second_layer_size, 1)
     self.policy_head = nn.Linear(second_layer_size, action_space)
 
+    self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    self.to(self.device)
+
   def __call__(self, observations):
     x = F.relu(self.first_layer(observations))
     x = F.relu(self.second_layer(x))
@@ -44,6 +47,9 @@ class ConvolutionalNetwork(nn.Module):
     self.fc2 = nn.Linear(first_linear_size, second_linear_size)
     self.value_head = nn.Linear(second_linear_size, 1)
     self.policy_head = nn.Linear(second_linear_size, action_space)
+
+    self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    self.to(self.device)
 
   def __call__(self, observations):
     x = F.relu(self.conv1(observations))
