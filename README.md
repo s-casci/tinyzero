@@ -15,7 +15,7 @@ where `tictactoe2d` is the name of the environment you want to train on.
 
 Inside the train script, you can change some parameters, such as the number of episodes, the number of simulations and enable [wandb](https://wandb.ai/site) logging.
 
-Similarly, to then evaluate the agent, run:
+Similarly, to evaluate the trained agent run:
 ```bash
 python3 tictactoe2d/eval.py
 ```
