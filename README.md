@@ -5,7 +5,7 @@
 Easily train AlphaZero-like agents on any environment you want!
 
 ## Usage
-Make sure you have Python >= 3.8 intalled. After that, run `pip install requirements.txt` to install the necessary dependencies.
+Make sure you have Python >= 3.8 intalled. After that, run `pip install -r requirements.txt` to install the necessary dependencies.
 
 Then, to train an agent on one of the existing environments, run:
 ```bash
