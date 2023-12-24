@@ -31,7 +31,8 @@ class Connect2:
     return [i for i, x in enumerate(self.state) if x == 0]
 
   def step(self, action):
-    assert self.state[action] == 0
+    if self.state[action] != 0:
+      raise ValueError(f"Action {action} is illegal")
     self.state[action] = self.turn
     self.actions_stack.append(action)
     self.turn *= -1
