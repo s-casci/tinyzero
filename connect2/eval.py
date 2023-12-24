@@ -9,7 +9,7 @@ import sys
 sys.path.append(os.getcwd())
 from models import LinearNetwork  # noqa: E402
 from agents import AlphaZeroAgent  # noqa: E402
-from play import pit  # noqa: E402
+from mcts import pit # noqa: E402
 
 EVAL_GAMES = 100
 
