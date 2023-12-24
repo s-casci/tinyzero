@@ -26,17 +26,13 @@ class AlphaZeroAgent:
     self.optimizer = optimizer
     self.replay_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
 
-  @torch.no_grad
   def value_fn(self, game):
-    observation = torch.tensor(game.to_observation(), device=self.model.device)
-    self.model.eval()
+    observation = torch.tensor(game.to_observation(), device=self.model.device, requires_grad=False)
     value = self.model.value_forward(observation)
     return value.item()
 
-  @torch.no_grad
   def policy_fn(self, game):
-    observation = torch.tensor(game.to_observation(), device=self.model.device)
-    self.model.eval()
+    observation = torch.tensor(game.to_observation(), device=self.model.device, requires_grad=False)
     policy = self.model.policy_forward(observation)
     return policy.numpy()
 
@@ -66,21 +62,6 @@ class AlphaZeroAgent:
     self.model.load_state_dict(torch.load(model_out_path))
     self.optimizer.load_state_dict(torch.load(optimizer_out_path))
 
-  def _model_train_step(self, observations, actions_dist, results):
-    observations = torch.tensor(observations, device=self.model.device)
-    actions_dist = torch.tensor(actions_dist, device=self.model.device)
-    results = torch.tensor(results, device=self.model.device)
-    self.model.train()
-    self.optimizer.zero_grad()
-    values, log_policies = self.model(observations)
-    # mean squared error
-    values_loss = F.mse_loss(values.squeeze(1), results)
-    # Kullback–Leibler divergence
-    policies_loss = F.kl_div(log_policies, actions_dist, reduction="batchmean")
-    (values_loss + policies_loss).backward()
-    self.optimizer.step()
-    return values_loss.item(), policies_loss.item()
-
   def train_step(self, game, search_iterations, batch_size, epochs, c_puct=1.0, dirichlet_alpha=None):
     first_person_result, game_buffer = self.selfplay(
       game, search_iterations, c_puct=c_puct, dirichlet_alpha=dirichlet_alpha
@@ -96,8 +77,23 @@ class AlphaZeroAgent:
     if len(self.replay_buffer) >= batch_size:
       for _ in range(epochs):
         observations, actions_dist, results = self.replay_buffer.sample(batch_size)
-        values_loss, policies_loss = self._model_train_step(observations, actions_dist, results)
-        values_losses.append(values_loss)
-        policies_losses.append(policies_loss)
+        observations = torch.tensor(observations, device=self.model.device)
+        actions_dist = torch.tensor(actions_dist, device=self.model.device)
+        results = torch.tensor(results, device=self.model.device)
+
+        self.model.train()
+        self.optimizer.zero_grad()
+        values, log_policies = self.model(observations)
+
+        # mean squared error
+        values_loss = F.mse_loss(values.squeeze(1), results)
+        # Kullback–Leibler divergence
+        policies_loss = F.kl_div(log_policies, actions_dist, reduction="batchmean")
+
+        (values_loss + policies_loss).backward()
+        self.optimizer.step()
+
+        values_losses.append(values_loss.item())
+        policies_losses.append(policies_loss.item())
 
     return values_losses, policies_losses

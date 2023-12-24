@@ -21,19 +21,21 @@ class LinearNetwork(nn.Module):
     log_policy = F.log_softmax(self.policy_head(x), dim=-1)
     return value, log_policy
 
-  @torch.no_grad
   def value_forward(self, observation):
-    x = F.relu(self.first_layer(observation))
-    x = F.relu(self.second_layer(x))
-    value = F.tanh(self.value_head(x))
-    return value
+    self.eval()
+    with torch.no_grad():
+      x = F.relu(self.first_layer(observation))
+      x = F.relu(self.second_layer(x))
+      value = F.tanh(self.value_head(x))
+      return value
 
-  @torch.no_grad
   def policy_forward(self, observation):
-    x = F.relu(self.first_layer(observation))
-    x = F.relu(self.second_layer(x))
-    log_policy = F.softmax(self.policy_head(x), dim=-1)
-    return log_policy
+    self.eval()
+    with torch.no_grad():
+      x = F.relu(self.first_layer(observation))
+      x = F.relu(self.second_layer(x))
+      log_policy = F.softmax(self.policy_head(x), dim=-1)
+      return log_policy
 
 
 class ConvolutionalNetwork(nn.Module):
@@ -63,24 +65,24 @@ class ConvolutionalNetwork(nn.Module):
     log_policy = F.log_softmax(self.policy_head(x), dim=-1)
     return value, log_policy
 
-  @torch.no_grad
   def value_forward(self, observation):
-    x = F.relu(self.conv1(observation))
-    x = F.relu(self.conv2(x))
-    x = F.relu(self.conv3(x))
-    x = x.view(-1, 3 * 3 * 64)
-    x = F.relu(self.fc1(x))
-    x = F.relu(self.fc2(x))
-    value = F.tanh(self.value_head(x))
-    return value[0]
+    with torch.no_grad():
+      x = F.relu(self.conv1(observation))
+      x = F.relu(self.conv2(x))
+      x = F.relu(self.conv3(x))
+      x = x.view(-1, 3 * 3 * 64)
+      x = F.relu(self.fc1(x))
+      x = F.relu(self.fc2(x))
+      value = F.tanh(self.value_head(x))
+      return value[0]
 
-  @torch.no_grad
   def policy_forward(self, observation):
-    x = F.relu(self.conv1(observation))
-    x = F.relu(self.conv2(x))
-    x = F.relu(self.conv3(x))
-    x = x.view(-1, 3 * 3 * 64)
-    x = F.relu(self.fc1(x))
-    x = F.relu(self.fc2(x))
-    log_policy = F.softmax(self.policy_head(x), dim=-1)
-    return log_policy[0]
+    with torch.no_grad():
+      x = F.relu(self.conv1(observation))
+      x = F.relu(self.conv2(x))
+      x = F.relu(self.conv3(x))
+      x = x.view(-1, 3 * 3 * 64)
+      x = F.relu(self.fc1(x))
+      x = F.relu(self.fc2(x))
+      log_policy = F.softmax(self.policy_head(x), dim=-1)
+      return log_policy[0]
