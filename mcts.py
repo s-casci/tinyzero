@@ -112,10 +112,11 @@ def play(game, agent, search_iterations, c_puct=1.0, dirichlet_alpha=None):
 
 
 def pit(game, agent1, agent2, agent1_play_kwargs, agent2_play_kwargs):
-  agent = [agent1, agent2]
-  i = 0
+  current_agent, other_agent = agent1, agent2
+  current_agent_play_kwargs, other_agent_play_kwargs = agent1_play_kwargs, agent2_play_kwargs
   while (result := game.get_result()) is None:
-    action = play(game, agent[i], **(agent1_play_kwargs if i == 0 else agent2_play_kwargs))
+    action = play(game, current_agent, **current_agent_play_kwargs)
     game.step(action)
-    i = 1 - i
+    current_agent, other_agent = other_agent, current_agent
+    current_agent_play_kwargs, other_agent_play_kwargs = other_agent_play_kwargs, current_agent_play_kwargs
   return result
