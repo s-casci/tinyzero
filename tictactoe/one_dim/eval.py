@@ -1,4 +1,4 @@
-from game import TicTacToe1D
+from game import TicTacToe
 import torch
 from train import OUT_DIR, SEARCH_ITERATIONS
 from tqdm import tqdm
@@ -14,7 +14,7 @@ from mcts import pit  # noqa: E402
 EVAL_GAMES = 100
 
 if __name__ == "__main__":
-  game = TicTacToe1D()
+  game = TicTacToe()
 
   model = LinearNetwork(game.observation_shape, game.action_space)
   model.load_state_dict(torch.load(f"{OUT_DIR}/model.pth"))

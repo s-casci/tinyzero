@@ -3,10 +3,10 @@ import os
 import sys
 
 sys.path.append(os.getcwd())
-from tictactoe1d.game import TicTacToe1D  # noqa: E402
+from tictactoe.one_dim.game import TicTacToe as TicTacToe1D  # noqa: E402
 
 
-class TicTacToe2D(TicTacToe1D):
+class TicTacToe(TicTacToe1D):
   def __init__(self):
     super().__init__()
 
