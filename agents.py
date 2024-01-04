@@ -34,7 +34,7 @@ class AlphaZeroAgent:
   def policy_fn(self, game):
     observation = torch.tensor(game.to_observation(), device=self.model.device, requires_grad=False)
     policy = self.model.policy_forward(observation)
-    return policy.numpy()
+    return policy.cpu().numpy()
 
   def selfplay(self, game, search_iterations, c_puct=1.0, dirichlet_alpha=None):
     buffer = []
