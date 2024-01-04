@@ -7,7 +7,7 @@ import os
 import sys
 
 sys.path.append(os.getcwd())
-from models import ConvolutionalNetwork  # noqa: E402
+from models import TicTacToe2DNetwork  # noqa: E402
 from agents import AlphaZeroAgentTrainer  # noqa: E402
 
 OUT_DIR = "tictactoe/two_dim/out"
@@ -29,7 +29,7 @@ WANDB_RUN_NAME = "run" + datetime.now().strftime("%Y%m%d-%H%M%S")
 if __name__ == "__main__":
   game = TicTacToe()
 
-  model = ConvolutionalNetwork(game.observation_shape, game.action_space)
+  model = TicTacToe2DNetwork(game.observation_shape, game.action_space)
   optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
   agent = AlphaZeroAgentTrainer(model, optimizer, MAX_REPLAY_BUFFER_SIZE)
