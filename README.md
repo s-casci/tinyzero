@@ -55,7 +55,7 @@ The agent you add should implement the following methods:
 - `value_fn(game)`: takes as input a game and returns a value (float)
 - `policy_fn(game)`: takes as input a game and returns a policy (Numpy array)
 
-Any other method is not directly used by the MCTS, so it's optional and depends on the agent you want to implement. For example, the `AlphaZeroAgent` is extended in a `AlphaZeroAgentTrainer` class that adds methods to train the model after each episode.
+Any other method is not directly used by the MCTS, so it's optional and depends on the agent you want to implement. For example, the `AlphaZeroAgent` is extended by the `AlphaZeroAgentTrainer` class that adds methods to train the model after each episode.
 
 ## Train in Google Colab
 
