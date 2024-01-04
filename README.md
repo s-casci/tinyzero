@@ -56,3 +56,22 @@ The agent you add should implement the following methods:
 - `policy_fn(game)`: takes as input a game and returns a policy (Numpy array)
 
 Any other method is not directly used by the MCTS, so it's optional and depends on the agent you want to implement. For example, the `AlphaZeroAgent` implements a `train_step` method to train the model after each episode.
+
+## Train in Google Colab
+
+To train in Google Colab, install `wandb` first:
+```bash
+!pip install wandb
+```
+Then clone the repository:
+```bash
+!git clone https://github.com/s-casci/tinyzero.git
+```
+Train on one of the environments (select a GPU runtime for faster training):
+```bash
+!cd tinyzero; python3 tictactoe/two_dim/train.py
+```
+And evaluate:
+```bash
+!cd tinyzero; python3 tictactoe/two_dim/eval.py
+```
