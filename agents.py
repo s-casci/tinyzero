@@ -20,11 +20,8 @@ class ClassicMCTSAgent:
 
 
 class AlphaZeroAgent:
-  def __init__(self, model, optimizer=None, replay_buffer_max_size=None):
+  def __init__(self, model):
     self.model = model
-    # optimizer and training buffer might be None if the agent is used for evaluation only
-    self.optimizer = optimizer
-    self.replay_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
 
   def value_fn(self, game):
     observation = torch.tensor(game.to_observation(), device=self.model.device, requires_grad=False)
@@ -36,7 +33,14 @@ class AlphaZeroAgent:
     policy = self.model.policy_forward(observation)
     return policy.cpu().numpy()
 
-  def selfplay(self, game, search_iterations, c_puct=1.0, dirichlet_alpha=None):
+
+class AlphaZeroAgentTrainer(AlphaZeroAgent):
+  def __init__(self, model, optimizer, replay_buffer_max_size):
+    super().__init__(model)
+    self.optimizer = optimizer
+    self.replay_buffer = ReplayBuffer(max_size=replay_buffer_max_size)
+
+  def _selfplay(self, game, search_iterations, c_puct=1.0, dirichlet_alpha=None):
     buffer = []
     while (first_person_result := game.get_first_person_result()) is None:
       root_node = search(
@@ -54,16 +58,8 @@ class AlphaZeroAgent:
 
     return first_person_result, buffer
 
-  def save_training_state(self, model_out_path, optimizer_out_path):
-    torch.save(self.model.state_dict(), model_out_path)
-    torch.save(self.optimizer.state_dict(), optimizer_out_path)
-
-  def load_training_state(self, model_out_path, optimizer_out_path):
-    self.model.load_state_dict(torch.load(model_out_path))
-    self.optimizer.load_state_dict(torch.load(optimizer_out_path))
-
   def train_step(self, game, search_iterations, batch_size, epochs, c_puct=1.0, dirichlet_alpha=None):
-    first_person_result, game_buffer = self.selfplay(
+    first_person_result, game_buffer = self._selfplay(
       game, search_iterations, c_puct=c_puct, dirichlet_alpha=dirichlet_alpha
     )
 
@@ -97,3 +93,11 @@ class AlphaZeroAgent:
         policies_losses.append(policies_loss.item())
 
     return values_losses, policies_losses
+
+  def save_training_state(self, model_out_path, optimizer_out_path):
+    torch.save(self.model.state_dict(), model_out_path)
+    torch.save(self.optimizer.state_dict(), optimizer_out_path)
+
+  def load_training_state(self, model_out_path, optimizer_out_path):
+    self.model.load_state_dict(torch.load(model_out_path))
+    self.optimizer.load_state_dict(torch.load(optimizer_out_path))

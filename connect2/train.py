@@ -8,7 +8,7 @@ import sys
 
 sys.path.append(os.getcwd())
 from models import LinearNetwork  # noqa: E402
-from agents import AlphaZeroAgent  # noqa: E402
+from agents import AlphaZeroAgentTrainer  # noqa: E402
 
 OUT_DIR = "connect2/out"
 INIT_FROM_CHECKPOINT = False
@@ -32,7 +32,7 @@ if __name__ == "__main__":
   model = LinearNetwork(game.observation_shape, game.action_space)
   optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
-  agent = AlphaZeroAgent(model, optimizer, MAX_REPLAY_BUFFER_SIZE)
+  agent = AlphaZeroAgentTrainer(model, optimizer, MAX_REPLAY_BUFFER_SIZE)
 
   if INIT_FROM_CHECKPOINT:
     agent.load_training_state(f"{OUT_DIR}/model.pth", f"{OUT_DIR}/optimizer.pth")

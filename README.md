@@ -49,13 +49,13 @@ The AlphaZero agent computes the policy loss as the Kulback-Leibler divergence b
 
 ## Add a new agent
 
-Thanks to the way the value and policy functions are interpreted by the search tree, it's possible to use or train any agent that implements them. To add a new agent, you can follow the existing example in `agents.py`.
+Thanks to the way the value and policy functions are interpreted by the search tree, it's possible to use or train any agent that implements them. To add a new agent, you can follow the existing examples in `agents.py`.
 
 The agent you add should implement the following methods:
 - `value_fn(game)`: takes as input a game and returns a value (float)
 - `policy_fn(game)`: takes as input a game and returns a policy (Numpy array)
 
-Any other method is not directly used by the MCTS, so it's optional and depends on the agent you want to implement. For example, the `AlphaZeroAgent` implements a `train_step` method to train the model after each episode.
+Any other method is not directly used by the MCTS, so it's optional and depends on the agent you want to implement. For example, the `AlphaZeroAgent` is extended in a `AlphaZeroAgentTrainer` class that adds methods to train the model after each episode.
 
 ## Train in Google Colab
 
