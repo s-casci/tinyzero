@@ -77,7 +77,6 @@ class AlphaZeroAgentTrainer(AlphaZeroAgent):
         actions_dist = torch.tensor(actions_dist, device=self.model.device)
         results = torch.tensor(results, device=self.model.device)
 
-        self.model.train()
         self.optimizer.zero_grad()
         values, log_policies = self.model(observations)
 

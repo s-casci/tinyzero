@@ -15,6 +15,7 @@ class LinearNetwork(nn.Module):
     self.to(self.device)
 
   def __call__(self, observations):
+    self.train()
     x = F.relu(self.first_layer(observations))
     x = F.relu(self.second_layer(x))
     value = F.tanh(self.value_head(x))
@@ -54,6 +55,7 @@ class TicTacToe2DNetwork(nn.Module):
     self.to(self.device)
 
   def __call__(self, observations):
+    self.train()
     x = F.relu(self.conv1(observations))
     x = F.relu(self.conv2(x))
     x = F.relu(self.conv3(x))
@@ -66,6 +68,7 @@ class TicTacToe2DNetwork(nn.Module):
     return value, log_policy
 
   def value_forward(self, observation):
+    self.eval()
     with torch.no_grad():
       x = F.relu(self.conv1(observation))
       x = F.relu(self.conv2(x))
@@ -77,6 +80,7 @@ class TicTacToe2DNetwork(nn.Module):
       return value[0]
 
   def policy_forward(self, observation):
+    self.eval()
     with torch.no_grad():
       x = F.relu(self.conv1(observation))
       x = F.relu(self.conv2(x))
