@@ -92,14 +92,12 @@ def search(game, value_fn, policy_fn, iterations, c_puct=1.0, dirichlet_alpha=No
 
   for _ in range(iterations):
     leaf = select(root, game, c_puct)
-    result = game.get_result()
+    result = game.get_first_person_result()
     if result is None:
       children_actions = game.get_legal_actions()
       children_priors = policy_fn(game)[children_actions]
       expand(leaf, children_actions, children_priors)
       result = value_fn(game)
-    else:
-      result *= game.turn
     backpropagate(leaf, game, result)
   return root
 
