@@ -13,7 +13,7 @@ python3 tictactoe/two_dim/train.py
 ```
 where `tictactoe/two_dim` is the name of the environment you want to train on.
 
-Inside the train script, you can change some parameters, such as the number of episodes, the number of simulations and enable [wandb](https://wandb.ai/site) logging.
+Inside the train script, you can change parameters such as the number of episodes, the number of simulations and enable [wandb](https://wandb.ai/site) logging.
 
 Similarly, to evaluate the trained agent run:
 ```bash
@@ -49,7 +49,7 @@ The AlphaZero agent computes the policy loss as the Kulback-Leibler divergence b
 
 ## Add a new agent
 
-Thanks to the way the value and policy functions are interpreted by the search tree, it's possible to use or train any agent that implements them. To add a new agent, you can follow the existing examples in `agents.py`.
+Thanks to the way the value and policy functions are called by the search tree, it's possible to use or train any agent that implements them. To add a new agent, you can follow the existing examples in `agents.py`.
 
 The agent you add should implement the following methods:
 - `value_fn(game)`: takes as input a game and returns a value (float)
